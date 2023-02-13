@@ -1,3 +1,7 @@
+# Imports
+from pickle import load
+from json import loads
+
 # Load model
 clf = load(
     file=open('../results/clf.sav', 'rb')
