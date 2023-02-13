@@ -25,10 +25,10 @@ j1 = {
 }
 
 # Define function
-def make_pred(request=None):
+def lambda_handler(event, context):
 
     # Load request
-    d = request
+    d = event
     x = [d[k] for k in d]
 
     # Make prediction
