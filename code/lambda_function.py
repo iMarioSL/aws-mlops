@@ -42,8 +42,13 @@ def lambda_handler(event, context):
 
     # Invalid event is passed:
     except:
+
+        # Error message
+        err = f'Event must have the following keys:\n{expected_keys}'
+
+        # Return
         return {
             'status': '400',
-            'reason': f'Bad request. Event must have the following keys:\n{expected_keys}',
+            'reason': err,
             'prediction': ''
         }
