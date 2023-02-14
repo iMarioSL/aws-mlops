@@ -1,6 +1,15 @@
 # Imports
 from pickle import load
 
+# Declare expected keys
+expected_keys = [
+    'Mean concave points',
+    'Worst radius',
+    'Worst texture',
+    'Worst area',
+    'Worst concave points'
+]
+
 # Load model
 clf = load(
     file=open('./results/clf.sav', 'rb')
@@ -9,14 +18,27 @@ clf = load(
 # Define function
 def lambda_handler(event, context):
 
-    # Load request
-    x = list(event.values())
+    # A valid event is passed
+    try:
+        
+        # Check if event is a dict with correct keys
+        assert(
+            isinstance(event, dict)
+            and list(event.keys()) == expected_keys
+        )
 
-    # Make prediction
-    pred = clf.predict([x]).item()
+        # Load request
+        x = list(event.values())
 
-    # Return
-    return {
-        'status': '200',
-        'prediction': pred
-    }
+        # Make prediction
+        pred = clf.predict([x]).item()
+
+        # Return
+        return {
+            'status': '200',
+            'prediction': pred
+        }
+
+    # Invalid event is passed:
+    except:
+        print(f'Bad request. Event must have the following keys:\n{expected_keys}')
