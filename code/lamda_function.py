@@ -11,7 +11,7 @@ def lambda_handler(event, context):
 
     # Load request
     d = event
-    x = [d[k] for k in d]
+    x = list(d.values())
 
     # Make prediction
     pred = clf.predict([x]).item()
