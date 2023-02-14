@@ -36,9 +36,14 @@ def lambda_handler(event, context):
         # Return
         return {
             'status': '200',
+            'reason': 'OK',
             'prediction': pred
         }
 
     # Invalid event is passed:
     except:
-        print(f'Bad request. Event must have the following keys:\n{expected_keys}')
+        return {
+            'status': '400',
+            'reason': f'Bad request. Event must have the following keys:\n{expected_keys}',
+            'prediction': ''
+        }
