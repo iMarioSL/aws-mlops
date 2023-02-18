@@ -47,7 +47,7 @@ def lambda_handler(event, context):
     except:
 
         # Error message
-        err = f'Body must contain values for: \n{expected_keys}'
+        err = f"Body must contain values for: {', '.join(expected_keys)}"
 
         # Return
         return {
