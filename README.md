@@ -45,5 +45,5 @@ curl -X POST \
 ```
 
 Example with [Insomnia](https://insomnia.rest/):
-![Insomnia POST request
-](https://drive.google.com/file/d/1IXNWLsN56oGmaUCYd3ix44OuqE-jY_7j/view?usp=sharing)
+![Insomnia POST
+request](https://drive.google.com/file/d/1IXNWLsN56oGmaUCYd3ix44OuqE-jY_7j/view?usp=sharing)
