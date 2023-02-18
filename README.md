@@ -32,3 +32,15 @@ for `joblib`, `numpy`, `scipy` and `threadpoolctl` (read article for more info
 details on how to do this!) and add them to your function.
 7. Create a public [Lambda Function
 ULR](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
+8. Start posting requests!
+
+### Examples
+Example with `curl`:
+```
+curl -X POST \
+    '<your-function-url-here> \
+    -H 'Content-Type: application/json' \
+    -d '{"meanConcavePoints": 0.07951, "worstRadius": 24.86, "worstTexture": 26.58, "worstArea": 1866.0, "worstConcavePoints": 0.1789}'
+```
+
+Example with [Insomnia](https://insomnia.rest/):
