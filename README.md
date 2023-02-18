@@ -30,5 +30,5 @@ In order to run it:
 Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html)
 for `joblib`, `numpy`, `scipy` and `threadpoolctl` (read article for more info
 details on how to do this!) and add them to your function.
-7. Create a public [Lambda Function ULR]
-(https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
+7. Create a public [Lambda Function
+ULR](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
