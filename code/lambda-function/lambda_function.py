@@ -23,15 +23,15 @@ def lambda_handler(event, context):
     try:
 
         # Extract body and turn to dict
-        req = loads(event['body'])
+        body = loads(event['body'])
         
         # Check if event is a dict with correct keys
         assert(
-            list(event.keys()) == expected_keys
+            list(body.keys()) == expected_keys
         )
 
         # Extract values
-        x = list(req.values())
+        x = list(body.values())
 
         # Make prediction
         pred = clf.predict([x]).item()
@@ -47,7 +47,7 @@ def lambda_handler(event, context):
     except:
 
         # Error message
-        err = f"Body must contain values for: {', '.join(expected_keys)}"
+        err = f"'body' must contain values for: {', '.join(expected_keys)}"
 
         # Return
         return {
