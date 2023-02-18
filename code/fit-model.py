@@ -2,6 +2,10 @@
 # Training a simple classifier #
 ################################
 
+# NOTE: This file and `fit-model.ipynb` produce the same result. The only
+# difference is that the notebook has more context (and requires more
+# dependencies). You can use both files interchangeably.
+
 # This notebook will fit a gradient boosted ensemble of trees to the infamous
 # 1995 breast cancer dataset. The goal is to produce a model that can
 # somewhat-accurately predict if a patient has breast cancer or not.
