@@ -35,7 +35,7 @@ details on how to do this!) and add them to your function.
 ULR](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
 8. Start posting requests!
 
-### Examples
+## Examples
 Example with `curl`:
 ```
 curl -X POST \
