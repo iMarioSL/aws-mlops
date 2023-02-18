@@ -167,5 +167,5 @@ clf = clf.fit(
 # Export model
 pickle.dump(
     obj=clf,
-    file=open('code/results/clf.sav', 'wb')
+    file=open('code/lambda-function/clf.sav', 'wb')
 )
