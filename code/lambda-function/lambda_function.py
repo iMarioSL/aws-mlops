@@ -12,7 +12,7 @@ expected_keys = [
 
 # Load model
 clf = load(
-    file=open('clf.sav', 'rb')
+    file=open('./clf.sav', 'rb')
 )
 
 # Define function
