@@ -3,7 +3,7 @@ This repo trains a Machine Learning model and deploys it on AWS. Te end result
 is a fully serverless prediction service that users or applications can connect
 to.
 
-## How to run
+## Structure of this repo
 The repo is structured as follows:
 ```
 .
@@ -16,6 +16,7 @@ The repo is structured as follows:
 └── README.md
 ````
 
+## Running this repo
 In order to run it:
 1. Create a virtual environment using `venv` and activate it.
 2. Install dependencies (`$ pip install -r requirements.txt`).
@@ -44,3 +45,5 @@ curl -X POST \
 ```
 
 Example with [Insomnia](https://insomnia.rest/):
+![Insomnia POST request
+](https://drive.google.com/file/d/1IXNWLsN56oGmaUCYd3ix44OuqE-jY_7j/view?usp=sharing)
