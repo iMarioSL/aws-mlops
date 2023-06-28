@@ -1,12 +1,12 @@
 # Productionizing a Machine Learning Model with AWS Lambda
 A lot of us scientists are able to apply complex Artificial Intelligence
 algorithms to learn patterns from data and accurately predict the future.
-Unfortunately, our models are only _useful_ insofar as others can _use it_ to
+Unfortunately, our models are only _useful_ insofar as others can _use them_ to
 make predictions.
 
-Putting a model in production (i.e., _productioninzing_ or _deploying_ a model_)
+Putting a model in production (i.e., _productioninzing_ or _deploying_ a model)
 is the process of making it available to users around the world. In this
-article, we will build a fully serverless prediction service that users can
+article, we will build a fully _serverless_ prediction service that users can
 interact with to determine if digitized images of cells are cancerous or not.
 
 > All the resources needed to run this project can be found in [this
@@ -15,8 +15,8 @@ repository](https://github.com/ArturoSbr/aws-mlops).
 ## Case Study
 Imagine a medical clinic that offers breast scans to detect breast cancer.
 Currently, doctors visually inspect patients' scans to detect the presence of
-cancer. The clinic's manager has determined that this process takes too much of
-the doctors' time, so she wants to automate the process with an Artificial
+cancer. The clinic's manager has determined that this process is taking too much
+of the doctors' time, so she wants to automate the process with an Artificial
 Intelligence solution capable of analyzing the images.
 
 The manager has therefore hired you to create a model that detects malignant
@@ -31,7 +31,7 @@ closest hardware store to buy a server, install it in their garage, host their
 application in it and connect it to the internet so that their model could be
 used by people all around the world. As you can imagine, this is a highly
 expensive process, as it involves purchasing a server with the appropriate
-amount of RAM, storage space, network card, cooling system, etc. On top of that,
+RAM, storage space, network card, cooling system, etc. On top of that,
 developers had to worry about patching the server's operating system, updating
 the dependencies used by the model, setting up firewalls to fend off hackers and
 keeping an eye on the neighborhood kids to make sure no one tampered with the
@@ -56,7 +56,7 @@ model, we will _speedrun_ the training portion of the process by executing a
 Python script that outputs a scikit-learn classifier. To do this, download [the
 repo](
     https://github.com/ArturoSbr/aws-mlops
-), replicate the training environment and run the script.
+), replicate the Python environment and run the script.
 
 ```bash
 % cd <path where you downloaded the repo>/aws-mlops # Set directory
