@@ -76,64 +76,67 @@ este archivo y lo podemos cargar directamente en otros archivos sin tener que
 repetir el proceso de entrenamiento de nuevo.
 
 ## Crear una función Lambda
-AWS Lambda allows us to host our own code on machines owned and maintained
-by Amazon. From a developer's perspective, all we need to do is:
-1. Writing a function in our preferred programming language;
-2. Packing our dependencies into a deployment package; and
-3. Deploying our Lambda function.
+AWS Lambda nos permite hospedar una función en computadoras que son propiedad de
+Aamazon. Desde el punto de vista de un desarrollador, lo único que tenemos que
+hacer es:
+1. Escribir una función en nuestro lenguaje de programación preferido;
+2. Empacar nuestras dependencias; y
+3. Desplegar nuestra función.
 
-### 1. Writing the Lambda Function
-If you take a look into the `code/lambda-function/` directory, you will see the
-model that was exported by executing the `fit-model.py` script from the previous
-section as well as a python script named `lambda_function.py`. As its name
-suggests, the latter is the function we want to deploy in AWS Lambda.
+### 1. Escribir la función Lambda
+En el directorio `code/lambda-function/` verás el modelo que exportamos al
+ejecutar el archivo `fit-model.py` así como un script llamado
+`lambda_function.py`. Como su nombre lo indica, el segundo archivo representa
+la función que queremos desplegar en AWS Lambda.
 
-Our goal is to enable an HTTP endpoint to our Lambda function so that the
-clinic can use it to invoke it on demand. When the clinic sends a JSON file to
-our function's endpoint, the event will trigger `lambda_function.py`, which will
-load the classifier (named `clf`), receive the event sent by the clinic, get
-its `'body'`, pass the values of the features to `clf` and return a prediction.
+En el contexto del caso de negocio, nuestro objetivo es habilitar un extremo
+HTTP (HTTP endpoint) para que la cínica pueda invocar al modelo remotamente.
+Queremos que los doctores puedan enviar un archivo JSON a este extremo para
+activar el archivo `lambda_function.py`, el cual cargará el modelo (en un objeto
+llamado `clf`), recibirá el evento enviado por la clínica, extraerá el cuerpo
+(`body`) del mensaje, le pasará los atributos al objeto `clf` y regresará una
+predicción.
 
-For example, if the clinic sends the following information in the `body` of
-their request:
+Por ejemplo, si la cínica manda la siguiente información en el cuerpo del
+evento:
 ```
 {
-	"meanConcavePoints": 0.03821,
-	"worstRadius": 14.97,
-	"worstTexture": 24.64,
-	"worstArea": 677.9,
-	"worstConcavePoints": 0.1015
+    "meanConcavePoints": 0.03821,
+    "worstRadius": 14.97,
+    "worstTexture": 24.64,
+    "worstArea": 677.9,
+    "worstConcavePoints": 0.1015
 }
 ```
-our function will respond with:
+Nuestra función responderá con:
 ```
 {
-	"reason": "OK",
-	"prediction": 0,
-	"status": "200"
-}
-```
-
-Our function can also handle errors. For example, if the clinic sends a request
-that is missing a feature:
-```
-{
-	"meanConcavePoints": 0.03821,
-	"worstRadius": 14.97,
-	"worstTexture": 24.64,
-	"worstArea": 677.9
-}
-```
-our function will respond with:
-```
-{
-	"reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
-	"prediction": "",
-	"status": "400"
+    "reason": "OK",
+    "prediction": 0,
+    "status": "200"
 }
 ```
 
-### 2. Creating a deployment package
+Nuestra función también puede manejar errores. Por ejemplo, si la clínica envía
+un evento con un atributo faltante:
+```
+{
+    "meanConcavePoints": 0.03821,
+    "worstRadius": 14.97,
+    "worstTexture": 24.64,
+    "worstArea": 677.9
+}
+```
+Nuestra función responderá:
+```
+{
+    "reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
+    "prediction": "",
+    "status": "400"
+}
+```
+
+### 2. Crear un paquete de despliegue (_deployment package_)
 To deploy our code as a Lambda function, we must pack our scripts and
 dependencies into a _deployment package_. The idea is to pack all the resources
 needed to run the function we wrote so that the machine that ultimately executes
