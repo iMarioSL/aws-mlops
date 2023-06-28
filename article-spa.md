@@ -24,59 +24,58 @@ Para esto, has propuesto lo siguiente:
 2. Los doctores enviarán la información a nuestro modelo; y
 3. Nuestro modelo responderá con una predicción.
 
-## ¿Por qué usar AWS Lambda?
-In order to productionize a model back in the day, developers had to go to their
-closest hardware store to buy a server, install it in their garage, host their
-application in it and connect it to the internet so that their model could be
-used by people all around the world. As you can imagine, this is a highly
-expensive process, as it involves purchasing a server with the appropriate
-amount of RAM, storage space, network card, cooling system, etc. On top of that,
-developers had to worry about patching the server's operating system, updating
-the dependencies used by the model, setting up firewalls to fend off hackers and
-keeping an eye on the neighborhood kids to make sure no one tampered with the
-hardware!
+## ¿Por qué AWS Lambda?
+Unos años atrás, para poner un modelo en producción, los desarrolladores tenían
+que comprar un servidor, instalarlo en su garage, desplegar su aplicación en él
+y darle acceso a internet para que el mundo conectarse con este. Como podrás
+imaginar, solía ser un proceso muy caro, pues involucraba comprar un servidor
+con la RAM, almacenamiento, tarjeta de red y sistema de enfriamiento adecuados.
+Además, los desarrolladores tenían que actualizar el sistema operativo del
+servidor, defenderlo de ciberataques así como proteger su integridad física.
 
-_Serverless_ is a business model where a vendor (i.e., Amazon Web Services)
-owns and maintains the hardware needed to host an application and consumers can
-use it on-demand to deploy software. Thanks to serverless solutions, we can
-simply rent infrastructure from AWS and forget about buying a server,
-maintaining its physical integrity, patching the operating system, etc.
+_Serverless_ es un modelo de negocio donde un provedor (por ejemplo, Amazon Web
+Services) le da mantenimiento al hardware necesario para desplegar una
+aplicación y los consumidores pueden usarlo cuando ellos quieran. Gracias a este
+tipo de soluciones, ahora podemos rentar el hardware de AWS y solamente nos
+preocupamos por escribir código.
 
-AWS Lambda is the _crème de la crème_ of the serverless kingdom. It is a service
-that allows us to write functions in our preferred programming language and
-deploy them on servers owned and maintained by AWS. This means we do not have
-to worry about provisioning or maintaining the instance that hosts the function.
-All we need to do is write the function itself!
+En este sentido, AWS Lambda es el servicio líder del reino _serverless_, pues es
+un servicio que nos permite escribir funciones en nuestro lenguaje de
+programación preferido y desplegarlo en hardware de AWS. Esto significa que no
+tenemos que preocuparnos por provisionar o darle mantenimiento a la instancia
+en donde nuestra función está hospedada. Lo único que tenemos que hacer es
+escribir la función en sí.
 
-## Training a model
-We need to build a model before we even worry about enabling it for online
-consumption. Since the purpose of this article is learning how to deploy a
-model, we will _speedrun_ the training portion of the process by executing a
-Python script that outputs a scikit-learn classifier. To do this, download [the
-repo](
+## Entrenar un modelo
+El proceso de poner un modelo en producción está precedido por la etapa de
+entrenamiento del mismo. Dado que el proósito de este artículo es aprender a
+produccionalizar un modelo, vamos a pasar rápidamente por el proceso de
+entrenamiento. Para esto, descarga [el repositorio](
     https://github.com/ArturoSbr/aws-mlops
-), replicate the training environment and run the script.
+), replica el ambiente de Python y ejecuta el script.
 
 ```bash
-% cd <path where you downloaded the repo>/aws-mlops # Set directory
-% python3 -m venv my_venv # Create new virtual environment
-% source my_venv/bin/activate # Activate it
-% pip3 install -r requirements.txt # Install dependencies
-% python3 code/fit-model.py` # Run script that exports model
+% cd <path where you downloaded the repo>/aws-mlops # Cambia de directorio
+% python3 -m venv my_venv # Crea un nuevo ambiente virtual
+% source my_venv/bin/activate # Actívalo
+% pip3 install -r requirements.txt # Installa las dependencias
+% python3 code/fit-model.py` # Corre el script que exporta un modelo entrenado
 ```
 
-Doing this will fit a gradient boosting classifier on the [breast cancer](
+Estos comandos entrenarán un clasificador de potenciación de gradiente usando el
+[conjunto de datos de cáncer de mama](
     https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html
-) dataset, which contains digitized images of cell nuclei that indicate if a
-patient has breast cancer. If you want to dig deeper into how the model is fit,
-you can check the notebook `code/fit-model.ipynb`, which does the exact same
-thing as `code/fit-model.py` but has more comments explaining the process.
+) el cual contiene imágenes digitalizadas de células que indican si un paciente
+tiene cáncer. Si deseas averiguar más acerca de cómo se entrenó el modelo, te
+sugiero revisar el cuaderno `code/fit-model.ipynb`, el cual hace exáctamente lo
+mismo que `code/fit-model.py` pero tiene comentarios adicionales.
 
-You should see a file called `clf.sav` in the `code/lambda-function/` directory.
-The fitted model is stored in this file, and we can load it directly
-in other scripts without having to repeat the training process all over again.
+Tras ejecutar el código de Python, deberías de ver un archivo llamado `clf.sav`
+en el directorio `code/lambda-function/`. El modelo entrenado está guardado en
+este archivo y lo podemos cargar directamente en otros archivos sin tener que
+repetir el proceso de entrenamiento de nuevo.
 
-## Creating a Lambda Function
+## Crear una función Lambda
 AWS Lambda allows us to host our own code on machines owned and maintained
 by Amazon. From a developer's perspective, all we need to do is:
 1. Writing a function in our preferred programming language;
