@@ -1,57 +1,48 @@
 # Productionizing a Machine Learning Model with AWS Lambda
-In this article we will train a simple gradient boosting ensemble of decision
-trees to predict if digitized images of cells are cancerous or not. We will then
-export this model and enable it for online consumption using AWS Lambda.
-
-The end result will be a fully serverless prediction service that users can
-interact with to predict if a given image is cancerous or not.
-
- > All the resources needed to run this project can be found in [this
- repository](https://github.com/ArturoSbr/aws-mlops).
-
-## Case Study
-Imagine a medical clinic that offers breast scans to detect breast cancer. As of
-now, doctors visually inspect patients' scans to determine if they have cancer.
-The clinic's manager has realized that this process is too time consuming, so
-she wants to implement a Machine Learning solution that will analyze the scans
-to predict if an observation is cancerous or not.
-
-The manager has therefore hired us to create a model that can inspect scans to
-detect malignant tumors. We proposed the following solution:
-1. The clinic will scan a patient;
-2. They will extract a insights from the image (such as the radius of the
-   biggest cell);
-3. The clinic will send this information as a JSON document to our model; and
-4. Our model will respond with a prediction.
-
-## What do we mean by _productionizing a model_?
-A lot of us scientists are able to apply complex Machine Learning algorithms to
-learn patterns from data and accurately predict the future. Unfortunately, no
-matter how good our models may be, they are only _useful_ insofar as others can
-_use it_ to make predictions.
+A lot of us scientists are able to apply complex Artificial Intelligence
+algorithms to learn patterns from data and accurately predict the future.
+Unfortunately, our models are only _useful_ insofar as others can _use it_ to
+make predictions.
 
 Putting a model in production (i.e., _productioninzing_ or _deploying_ a model_)
-is the process of making it available to users around the world.
+is the process of making it available to users around the world. In this
+article, we will build a fully serverless prediction service that users can
+interact with to determine if digitized images of cells are cancerous or not.
 
-## What do we mean by _serverless_?
+> All the resources needed to run this project can be found in [this
+repository](https://github.com/ArturoSbr/aws-mlops).
+
+## Case Study
+Imagine a medical clinic that offers breast scans to detect breast cancer.
+Currently, doctors visually inspect patients' scans to detect the presence of
+cancer. The clinic's manager has determined that this process takes too much of
+the doctors' time, so she wants to automate the process with an Artificial
+Intelligence solution capable of analyzing the images.
+
+The manager has therefore hired you to create a model that detects malignant
+tumors. To achieve this, you proposed the following solution:
+1. The clinic will scan a patient;
+2. They will send the information to our model; and
+3. Our model will respond with a prediction.
+
+## Why use AWS Lambda?
 In order to productionize a model back in the day, developers had to go to their
 closest hardware store to buy a server, install it in their garage, host their
 application in it and connect it to the internet so that their model could be
-used by people all over the world. As you can imagine, this is a highly
+used by people all around the world. As you can imagine, this is a highly
 expensive process, as it involves purchasing a server with the appropriate
 amount of RAM, storage space, network card, cooling system, etc. On top of that,
 developers had to worry about patching the server's operating system, updating
 the dependencies used by the model, setting up firewalls to fend off hackers and
 keeping an eye on the neighborhood kids to make sure no one tampered with the
-server itself!
+hardware!
 
 _Serverless_ is a business model where a vendor (i.e., Amazon Web Services)
 owns and maintains the hardware needed to host an application and consumers can
 use it on-demand to deploy software. Thanks to serverless solutions, we can
 simply rent infrastructure from AWS and forget about buying a server,
-maintaining its physical integrity, watching 10-hour HTTP crash courses, etc.
+maintaining its physical integrity, patching the operating system, etc.
 
-## Why AWS Lambda?
 AWS Lambda is the _crème de la crème_ of the serverless kingdom. It is a service
 that allows us to write functions in our preferred programming language and
 deploy them on servers owned and maintained by AWS. This means we do not have
@@ -59,42 +50,37 @@ to worry about provisioning or maintaining the instance that hosts the function.
 All we need to do is write the function itself!
 
 ## Training a model
-We need to build a model before we worry about enabling it for online
-consumption. To do this, clone [the repo](
+We need to build a model before we even worry about enabling it for online
+consumption. Since the purpose of this article is learning how to deploy a
+model, we will _speedrun_ the training portion of the process by executing a
+Python script that outputs a scikit-learn classifier. To do this, download [the
+repo](
     https://github.com/ArturoSbr/aws-mlops
-) to your computer, create a new virtual environment, activate it and install
-the required libraries.
+), replicate the training environment and run the script.
 
 ```bash
-% git clone https://github.com/ArturoSbr/aws-mlops # Clone repo
-% cd aws-mlops # Set directory
+% cd <path where you downloaded the repo>/aws-mlops # Set directory
 % python3 -m venv my_venv # Create new virtual environment
 % source my_venv/bin/activate # Activate it
 % pip3 install -r requirements.txt # Install dependencies
+% python3 code/fit-model.py` # Run script that exports model
 ```
 
-To create the model, we will fit a gradient boosting classifier on the
-[breast cancer](
+Doing this will fit a gradient boosting classifier on the [breast cancer](
     https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html
 ) dataset, which contains digitized images of cell nuclei that indicate if a
-patient has breast cancer. You can do this by running either one of the
-following files:
-1. `code/fit-model.py`; or
-2. `code/fit-model.ipynb` (same script but with more comments explaining
-   the training process).
+patient has breast cancer. If you want to dig deeper into how the model is fit,
+you can check the notebook `code/fit-model.ipynb`, which does the exact same
+thing as `code/fit-model.py` but has more comments explaining the process.
 
-```bash
-% python3 code/fit-model.py # Execute script that exports the model
-```
-
-This will write a file called `clf.sav` to the `code/lambda-function/`
-directory. The fitted model is stored in this file, and we can load it directly
+You should see a file called `clf.sav` in the `code/lambda-function/` directory.
+The fitted model is stored in this file, and we can load it directly
 in other scripts without having to repeat the training process all over again.
 
 ## Creating a Lambda Function
 AWS Lambda allows us to host our own code on machines owned and maintained
-by Amazon. From a developer's perspective, all we have to worry about is:
-1. Writing a function in our preferred programing language;
+by Amazon. From a developer's perspective, all we need to do is:
+1. Writing a function in our preferred programming language;
 2. Packing our dependencies into a deployment package; and
 3. Deploying our Lambda function.
 
@@ -131,7 +117,7 @@ our function will respond with:
 ```
 
 Our function can also handle errors. For example, if the clinic sends a request
-that is missing the last feature:
+that is missing a feature:
 ```
 {
 	"meanConcavePoints": 0.03821,
@@ -150,7 +136,7 @@ our function will respond with:
 ```
 
 ### 2. Creating a deployment package
-To deploy our local code as a Lambda function, we must pack our scripts and
+To deploy our code as a Lambda function, we must pack our scripts and
 dependencies into a _deployment package_. The idea is to pack all the resources
 needed to run the function we wrote so that the machine that ultimately executes
 our code has access to all the things it needs to run it as we would on our
@@ -159,13 +145,10 @@ local machines.
 As you can see, `lambda_function.py` loads the file `clf.sav`, which is a
 _pickled_ scikit-learn object. This means that our function requires
 scikit-learn in the background. Unfortunately, packing scikit-learn alone will
-not work, as it requires other libraries. We can use `pip show` to see which
-libraries it relies on:
+not work because it requires other libraries:
 ```bash
 % pip3 show scikit-learn
-> [...]
 > Requires: joblib, numpy, scipy, threadpoolctl
-> [...]
 ```
 
 The output tells us that in order to load scikit-learn, we must first load
@@ -192,10 +175,9 @@ package. As a result, our functions can call the code stored in these layers
 without directly containing them in their deployment packages!
 
 To create a layer for a library:
-1. Go to [PyPI](https://pypi.org/);
-2. Download the _maylinux_ wheel file of the library version required by your
-   function (make sure it is compatible with the runtime and processor
-   architecture you will select later on);
+1. Go to [PyPI](https://pypi.org/) and download the _manylinux_ wheel file of
+   the library version required by your function (make sure it is compatible
+   with the runtime and processor architecture of your Lambda function);
 3. Unpack the library from your terminal using `% wheel unpack 
    <your-library.whl>`;
 4. Change the name of the folder that was unpacked to _python_;
@@ -214,14 +196,14 @@ Python 3.9 and 64-bit processors;
 3. This will create a folder called _numpy-1.24.1_;
 4. Rename this folder to _python_;
 5. Zip the _python_ folder;
-6. Log in to AWS and go to _AWS Lambda_ > _Layers_ > _Create a Layer_;
+6. Login to AWS and go to _AWS Lambda_ > _Layers_ > _Create a Layer_;
 7. Name it whatever you want and upload the `python.zip` file; and
 8. Click on _Create_.
 
 You must do this for all the libraries your function requires. Alternatively,
 repeat this process only for the libraries that do not fit within the size
-limit (though I recommend doing it for every library so that you can add them
-to other Lambda functions in the future!).
+limit (though I recommend doing it for every library so that you can
+individually add them to other Lambda functions in the future!).
 
 Now that we have created the necessary Lambda layers, all we need in our
 deployment package are the following files:
@@ -240,12 +222,12 @@ Lambda function.
 
 ### 3. Creating a Lambda Function
 We will go to our AWS Management Console and search for _Lambda_. Make sure to
-select the same region as your Lambda Layers! Now:
+select the same region as where you stored your Lambda Layers! Now:
 
 1. Go to _Functions_ > _Create function_ > _Author from scratch_;
 2. Configure your function as follows:
    1. Name your function;
-   2. use a Python 3.9 runtime;
+   2. Use a Python 3.9 runtime;
    3. select x86_64 as your architecture;
    4. leave _Permissions_ untouched;
    5. Click on _Advanced Settings_ > _Enable Function URL_ > _Auth type = NONE_.
@@ -282,16 +264,15 @@ After doing this, your layers should look like this:
 Let's recap what we have done. We trained a model, exported it, wrote a
 function that expects a request and passes it to the model to return a
 prediction. We zipped the model and function into a deployment package and we
-uploaded it to a Lambda function that has a Lambda URL enabled as well as all
-the Lambda Layers needed to load the model. In layman's terms, we have
-_productionized_ our model!
+uploaded it to a Lambda function that has a Lambda URL endpoint as well as all
+the Lambda Layers needed to load the model.
 
 Namely, the Lambda URL that we enabled when creating the function is an HTTP
-endpoint. We (or any application) can invoke the function by making calls to its
-URL. In our business case, we want to allow the doctors to send information to
-the model and have it respond with a prediction.
+endpoint. We (or any application) can invoke the function by making calls to
+this URL. In our business case, we want to allow the doctors to send information
+to the model and have it respond with a prediction.
 
-The doctors will do this by sending a POST request to the functions's endpoint.
+The doctors will do this by sending a POST request to the function's endpoint.
 The doctor's request must contain the features expected by the model in the
 request's `body`.
 
@@ -346,7 +327,7 @@ req = requests.post(
     json=observation,
 )
 
-# Print respons
+# Print response
 print(req.json())
 ```
 Which returns:
@@ -355,7 +336,7 @@ Which returns:
 ```
 
 ### Example 3. Try sending a bad request
-Just to be safe, let's see how out function handles bad requests. We will send
+Just to be safe, let's see how our function handles bad requests. We will send
 a request with only one feature.
 ```bash
 % curl -X POST \
@@ -369,4 +350,14 @@ Which responds with:
 ```
 
 ## Conclusion
-[Conclusion here]
+We have built a fully serverless prediction service using AWS Lambda, so
+congratulations to you! In following this article, you have learned how to
+create a deployment package, add external libraries as Layers, enable an HTTP
+endpoint, and trigger your function from anywhere in the world.
+
+Why is this useful? Remember that no matter how long we spend cross-validating
+our performance metrics, the models we build are only useful insofar as other
+users or applications can interact with them. In this sense, learning how to
+productionize models with AWS Lambda is an invaluable skill that will reduce
+your time-to-value by allowing you to productionize your code from the comfort
+of your console.
