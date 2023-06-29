@@ -13,7 +13,7 @@ determinar si imágenes digitalizadas son cancerígenas o no.
 este repositorio](https://github.com/ArturoSbr/aws-mlops).
 
 ## Caso Práctico
-Imagina un laboratorio médico que hace pruebas para detectar cancer de mama.
+Imagina un laboratorio médico que hace pruebas para detectar cáncer de mama.
 Actualmente, los doctores analizan visualmente las radiografías de los pacientes
 para determinar la presencia de cáncer. La gerente de la clínica ha notado que
 este proceso le toma mucho tiempo a los doctores, y te ha contratado a ti para
@@ -27,16 +27,17 @@ Para esto, has propuesto lo siguiente:
 ## ¿Por qué AWS Lambda?
 Unos años atrás, para poner un modelo en producción, los desarrolladores tenían
 que comprar un servidor, instalarlo en su garage, desplegar su aplicación en él
-y darle acceso a internet para que el mundo conectarse con este. Como podrás
-imaginar, solía ser un proceso muy caro, pues involucraba comprar un servidor
-con la RAM, almacenamiento, tarjeta de red y sistema de enfriamiento adecuados.
-Además, los desarrolladores tenían que actualizar el sistema operativo del
-servidor, defenderlo de ciberataques así como proteger su integridad física.
+y darle acceso a internet para que el mundo pudiera conectarse con este. Como
+podrás imaginar, solía ser un proceso muy caro, pues involucra comprar un
+servidor con la RAM, almacenamiento, tarjeta de red y sistema de enfriamiento
+adecuados. Además, los desarrolladores tenían que actualizar el sistema
+operativo del servidor, defenderlo de ciberataques así como proteger su
+integridad física.
 
-_Serverless_ es un modelo de negocio donde un provedor (por ejemplo, Amazon Web
+_Serverless_ es un modelo de negocio donde un proveedor (por ejemplo, Amazon Web
 Services) le da mantenimiento al hardware necesario para desplegar una
 aplicación y los consumidores pueden usarlo cuando ellos quieran. Gracias a este
-tipo de soluciones, ahora podemos rentar el hardware de AWS y solamente nos
+tipo de soluciones, ahora podemos rentar el hardware de AWS y solamente nos
 preocupamos por escribir código.
 
 En este sentido, AWS Lambda es el servicio líder del reino _serverless_, pues es
@@ -48,23 +49,23 @@ escribir la función en sí.
 
 ## Entrenar un modelo
 El proceso de poner un modelo en producción está precedido por la etapa de
-entrenamiento del mismo. Dado que el proósito de este artículo es aprender a
+entrenamiento del mismo. Dado que el propósito de este artículo es aprender a
 produccionalizar un modelo, vamos a pasar rápidamente por el proceso de
 entrenamiento. Para esto, descarga [el repositorio](
-    https://github.com/ArturoSbr/aws-mlops
+	https://github.com/ArturoSbr/aws-mlops
 ), replica el ambiente de Python y ejecuta el script.
 
 ```bash
 % cd <path where you downloaded the repo>/aws-mlops # Cambia de directorio
 % python3 -m venv my_venv # Crea un nuevo ambiente virtual
 % source my_venv/bin/activate # Actívalo
-% pip3 install -r requirements.txt # Installa las dependencias
+% pip3 install -r requirements.txt # Instala las dependencias
 % python3 code/fit-model.py` # Corre el script que exporta un modelo entrenado
 ```
 
-Estos comandos entrenarán un clasificador de potenciación de gradiente usando el
+Estos comandos entrenan un clasificador de potenciación de gradiente usando el
 [conjunto de datos de cáncer de mama](
-    https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html
+	https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html
 ) el cual contiene imágenes digitalizadas de células que indican si un paciente
 tiene cáncer. Si deseas averiguar más acerca de cómo se entrenó el modelo, te
 sugiero revisar el cuaderno `code/fit-model.ipynb`, el cual hace exáctamente lo
@@ -77,7 +78,7 @@ repetir el proceso de entrenamiento de nuevo.
 
 ## Crear una función Lambda
 AWS Lambda nos permite hospedar una función en computadoras que son propiedad de
-Aamazon. Desde el punto de vista de un desarrollador, lo único que tenemos que
+Amazon. Desde el punto de vista de un desarrollador, lo único que tenemos que
 hacer es:
 1. Escribir una función en nuestro lenguaje de programación preferido;
 2. Empacar nuestras dependencias; y
@@ -90,7 +91,7 @@ ejecutar el archivo `fit-model.py` así como un script llamado
 la función que queremos desplegar en AWS Lambda.
 
 En el contexto del caso de negocio, nuestro objetivo es habilitar un extremo
-HTTP (HTTP endpoint) para que la cínica pueda invocar al modelo remotamente.
+HTTP (HTTP endpoint) para que la clínica pueda invocar al modelo remotamente.
 Queremos que los doctores puedan enviar un archivo JSON a este extremo para
 activar el archivo `lambda_function.py`, el cual cargará el modelo (en un objeto
 llamado `clf`), recibirá el evento enviado por la clínica, extraerá el cuerpo
@@ -101,19 +102,19 @@ Por ejemplo, si la cínica manda la siguiente información en el cuerpo del
 evento:
 ```
 {
-    "meanConcavePoints": 0.03821,
-    "worstRadius": 14.97,
-    "worstTexture": 24.64,
-    "worstArea": 677.9,
-    "worstConcavePoints": 0.1015
+	"meanConcavePoints": 0.03821,
+	"worstRadius": 14.97,
+	"worstTexture": 24.64,
+	"worstArea": 677.9,
+	"worstConcavePoints": 0.1015
 }
 ```
 Nuestra función responderá con:
 ```
 {
-    "reason": "OK",
-    "prediction": 0,
-    "status": "200"
+	"reason": "OK",
+	"prediction": 0,
+	"status": "200"
 }
 ```
 
@@ -121,24 +122,24 @@ Nuestra función también puede manejar errores. Por ejemplo, si la clínica env
 un evento con un atributo faltante:
 ```
 {
-    "meanConcavePoints": 0.03821,
-    "worstRadius": 14.97,
-    "worstTexture": 24.64,
-    "worstArea": 677.9
+	"meanConcavePoints": 0.03821,
+	"worstRadius": 14.97,
+	"worstTexture": 24.64,
+	"worstArea": 677.9
 }
 ```
 Nuestra función responderá:
 ```
 {
-    "reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
-    "prediction": "",
-    "status": "400"
+	"reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
+	"prediction": "",
+	"status": "400"
 }
 ```
 
 ### 2. Crear un paquete de despliegue (_deployment package_)
 Debemos empacar nuestro código y todas las bibliotecas que utiliza para poder
-desplegar nuestro función en una Lambda. La idea es reunir todos los recursos
+desplegar nuestra función en una Lambda. La idea es reunir todos los recursos
 necesarios para replicar el ambiente de nuestro local en las computadoras de
 Amazon.
 
@@ -159,7 +160,7 @@ debe contener:
    scipy y scikit-learn).
 
 Actualmente, AWS Lambda no permite paquetes mayores a 50 MB y nuestro paquete se
-encuetra muy por encima de este corte. Por ende, necesitamos una alternativa
+encuentra muy por encima de este corte. Por ende, necesitamos una alternativa
 para poder cargar las bibliotecas que nos permitirán cargar el modelo guardado en
 el archivo `clf.sav`.
 
@@ -168,7 +169,7 @@ el archivo `clf.sav`.
 carga.
 
 Las famosas [Lambda Layers](
-    https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
+	https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
 ) nos permiten almacenar código _fuera_ de nuestras funciones Lambda. Esto
 significa que podemos reducir el tamaño de nuestros paquetes de despliegue, pues
 nuestras funciones podrán llamar librerías desde las _Layers_ que agreguemos.
@@ -177,11 +178,11 @@ Para crear una capa:
 1. Ve a [PyPI](https://pypi.org/) y descarga el archivo _wheel_ para _manylinux_
    de la biblioteca que requieras (asegúrate que sea compatible con el _runtime_
    y la arquitectura que elegiste al crear tu función);
-2. Desempaca la biblioteca desde tu terminal usando `% wheel unpack 
+2. Desempaca la biblioteca desde tu terminal usando `% wheel unpack
    <your-library.whl>`;
 3. Cambia el nombre del folder que se desempacó a _python_;
 4. Comprime el folder _python_;
-5. Entra a AWS, seleciona tu región y ve a _AWS Lambda_ > _Layers_ >
+5. Entra a AWS, selecciona tu región y ve a _AWS Lambda_ > _Layers_ >
    _Create a Layer_;
 6. Dale un nombre a tu capa y sube el archivo `python.zip` file; y
 7. Haz clic en _Create_.
@@ -231,7 +232,7 @@ _Advanced Settings_ > _Enable Function URL_ > _Auth type = NONE_; y finalmente
 3. Da clic en _Create function_.
 
 ![Lambda function configuration](
-    https://drive.google.com/uc?export=view&id=1Bu271Wt5XNdu8Fl8rrUc6PtazUgZZckb
+	https://drive.google.com/uc?export=view&id=1Bu271Wt5XNdu8Fl8rrUc6PtazUgZZckb
 )
 
 Estos pasos crearán una función con un extremo abierto. De esta forma,
@@ -239,7 +240,7 @@ cualquier persona o aplicación podrá conectarse a nuestra función usando la U
 que generamos al habilitar la opción _Enable Function URL_. En este momento tu
 función se debe de ver así:
 ![Lambda function URL](
-    https://drive.google.com/uc?export=view&id=15CnA27KccCbC8HW5vluM5rYi_OCljXp4
+	https://drive.google.com/uc?export=view&id=15CnA27KccCbC8HW5vluM5rYi_OCljXp4
 )
 
 Recuerda que aún falta incluir scikit-learn y todas sus dependencias en nuestro
@@ -254,7 +255,7 @@ el final de la página y:
 Tu función debería verse así:
 
 ![Layers added to function](
-    https://drive.google.com/uc?export=view&id=1Gioj4T6puagOmGl-SkE9LDRGIrdJELnH
+	https://drive.google.com/uc?export=view&id=1Gioj4T6puagOmGl-SkE9LDRGIrdJELnH
 )
 
 ## Conéctate a tu función
@@ -266,22 +267,22 @@ el cual subimos a una Lambda y le agregamos las bibliotecas requeridas para
 cargar el modelo usando _Layers_.
 
 Al crear la función habilitamos un extremo HTTP. Nosotros (o cualquier
-aplicación) puede invocar la función enviando solicitudes a este URL. En nuestro
+aplicación) puede invocar la función enviando solicitudes a esta URL. En nuestro
 caso de negocio, queremos permitir que los doctores envíen información al
-extremo para que el modelo les reponda con una predicción.
+extremo para que el modelo responda con una predicción.
 
 Puntualmente, los doctores enviarán una solicitud POST al extremo de la función.
 El evento debe contener todos los atributos requeridos por el modelo en el
 cuerpo (`body`) de la solicitud. Como ejemplo, imagina que la prueba de un
 paciente resulta en los siguientes valores.
 
-| feature             | value   |
+| feature         	| value   |
 |---------------------|---------|
 | Mean concave points | 0.07951 |
-| Worst radius        | 24.86   |
-| Worst texture       | 26.58   |
-| Worst area          | 1886.0  |
-| Mean concave points | 0.01    |
+| Worst radius    	| 24.86   |
+| Worst texture   	| 26.58   |
+| Worst area      	| 1886.0  |
+| Mean concave points | 0.01	|
 
 Veremos dos formas en las que un doctor podría enviar esta información al modelo
 para generar una predicción.
@@ -290,9 +291,9 @@ para generar una predicción.
 El doctor puede enviar la carga desde su terminal de la siguiente manera:
 ```bash
 % curl -X POST \
-      '{your-URL-here}' \
-      -H 'Content-Type: application/json' \
-      -d '{"meanConcavePoints": 0.07951, "worstRadius": 24.86, "worstTexture": 26.58, "worstArea": 1866.0, "worstConcavePoints": 0.01}'
+  	'{your-URL-here}' \
+  	-H 'Content-Type: application/json' \
+  	-d '{"meanConcavePoints": 0.07951, "worstRadius": 24.86, "worstTexture": 26.58, "worstArea": 1866.0, "worstConcavePoints": 0.01}'
 ```
 Lo que responde con:
 ```
@@ -311,17 +312,17 @@ url = "<your-function's-URL-here>"
 
 # Declara la observación
 observation = {
-    'meanConcavePoints': 0.07951,
-    'worstRadius': 24.86,
-    'worstTexture': 26.58,
-    'worstArea': 1866.0,
-    'worstConcavePoints': 0.01,
+	'meanConcavePoints': 0.07951,
+	'worstRadius': 24.86,
+	'worstTexture': 26.58,
+	'worstArea': 1866.0,
+	'worstConcavePoints': 0.01,
 }
 
 # Envía la solicitud
 req = requests.post(
-    url=url,
-    json=observation,
+	url=url,
+	json=observation,
 )
 
 # Imprime la respuesta
@@ -334,12 +335,12 @@ El resultado se ve igual que mediante cURL.
 
 ### Ejemplo 3 - Mandar una solicitud mala
 Por cautela, veamos qué hace nuestra función para manejar errores. Para
-probabrlo, enviaremos una observación con solamente un atributo.
+probarlo, enviaremos una observación con solamente un atributo.
 ```bash
 % curl -X POST \
-      '{your-URL-here}' \
-      -H 'Content-Type: application/json' \
-      -d '{"meanConcavePoints": 0.07951}'
+  	'{your-URL-here}' \
+  	-H 'Content-Type: application/json' \
+  	-d '{"meanConcavePoints": 0.07951}'
 ```
 Lo cual responde con:
 ```
@@ -354,7 +355,7 @@ HTTP y a activar tu función desde cualquier parte del mundo.
 
 ¿Esto es útil? Recuerda que no importa cuánto tiempo pasemos haciendo
 validación cruzada sobre nuestras métricas de desempeño, los modelos que
-construyamos solo son útiles si otros usuarios o aplcaciones pueden interactuar
+construyamos solo son útiles si otros usuarios o aplicaciones pueden interactuar
 con ellos. En este sentido, aprender a produccionalizar tus modelos con AWS
 Lambda es una habilidad invaluable que te ayudará a reducir tu _time-to-value_
 al permitirte desplegar tus modelos desde la comodidad de tu consola.
