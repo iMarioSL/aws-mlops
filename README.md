@@ -1,5 +1,5 @@
 # Deploying a Machine Learning Model Using AWS Lambda
-This repo trains a Machine Learning model and deploys it on AWS. Te end result
+This repo trains a Machine Learning model and deploys it on AWS. The end result
 is a fully serverless prediction service that users or applications can connect
 to.
 
