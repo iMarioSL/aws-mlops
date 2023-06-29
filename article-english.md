@@ -4,7 +4,7 @@ algorithms to learn patterns from data and accurately predict the future.
 Unfortunately, our models are only _useful_ insofar as others can _use them_ to
 make predictions.
 
-Putting a model in production (i.e., _productioninzing_ or _deploying_ a model)
+Putting a model in production (i.e., _productionizing_ or _deploying_ a model)
 is the process of making it available to users around the world. In this
 article, we will build a fully _serverless_ prediction service that users can
 interact with to determine if digitized images of cells are cancerous or not.
