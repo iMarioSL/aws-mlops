@@ -299,7 +299,7 @@ Lo que responde con:
 ```
 {"reason":"OK","prediction":1,"status":"200"}
 ```
-Esto resultado significa que el modelo detectó señales de cáncer en la prueba
+Este resultado significa que el modelo detectó señales de cáncer en la prueba
 del paciente.
 
 ### Ejemplo 2 - Invoca la función desde Python
