@@ -137,147 +137,143 @@ Nuestra función responderá:
 ```
 
 ### 2. Crear un paquete de despliegue (_deployment package_)
-To deploy our code as a Lambda function, we must pack our scripts and
-dependencies into a _deployment package_. The idea is to pack all the resources
-needed to run the function we wrote so that the machine that ultimately executes
-our code has access to all the things it needs to run it as we would on our
-local machines.
+Debemos empacar nuestro código y todas las bibliotecas que utiliza para poder
+desplegar nuestro función en una Lambda. La idea es reunir todos los recursos
+necesarios para replicar el ambiente de nuestro local en las computadoras de
+Amazon.
 
-As you can see, `lambda_function.py` loads the file `clf.sav`, which is a
-_pickled_ scikit-learn object. This means that our function requires
-scikit-learn in the background. Unfortunately, packing scikit-learn alone will
-not work because it requires other libraries:
+Como puedes ver, `lambda_function.py` carga el archivo `clf.sav`, el cual es un
+objeto de scikit-learn. Lógicamente, esto implica que nuestra función necesitará
+cargar scikit-learn, la cual está basada en otras bibliotecas:
 ```bash
 % pip3 show scikit-learn
 > Requires: joblib, numpy, scipy, threadpoolctl
 ```
 
-The output tells us that in order to load scikit-learn, we must first load
-joblib, numpy, scipy and threadpoolctl. Altogether, our deployment
-package should contain:
-1. The function (`lambda_function.py`);
-2. The serialized model (`clf.sav`); and
-3. The libraries stored in `my_venv/lib/` (joblib, numpy, threadpoolctl,
-   scipy and scikit-learn).
+El mensaje de arriba nos dice que para cargar scikit-learn, tenemos que cargar
+joblib, numpy, scipy y threadpoolctl. Por ende, nuestro paquete de despliegue
+debe contener:
+1. La función (`lambda_function.py`);
+2. El modelo serializado (`clf.sav`); y
+3. Las bibliotecas guardadas en `my_venv/lib/` (joblib, numpy, threadpoolctl,
+   scipy y scikit-learn).
 
-Our deployment package must weigh 50 MB or less when zipped and 250 MB or less
-when unzipped. In this example, the deployment package far-exceeds these limits,
-so we must find a way to lighten our package.
+Actualmente, AWS Lambda no permite paquetes mayores a 50 MB y nuestro paquete se
+encuetra muy por encima de este corte. Por ende, necesitamos una alternativa
+para poder cargar las bibliotecas que nos permitirán cargar el modelo guardado en
+el archivo `clf.sav`.
 
 #### Extra - AWS Lambda Layers
-**NOTE:** You can skip this step if your deployment package meets the size
-quotas.
+**NOTA:** Omite este paso si tu paquete de despliegue cumple con los límites de
+carga.
 
-[Lambda Layers](
+Las famosas [Lambda Layers](
     https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
-) allow us to store code and libraries _outside_ our Lambda functions. We can
-add layers to our functions in order to reduce the size of our deployment
-package. As a result, our functions can call the code stored in these layers
-without directly containing them in their deployment packages!
+) nos permiten almacenar código _fuera_ de nuestras funciones Lambda. Esto
+significa que podemos reducir el tamaño de nuestros paquetes de despliegue, pues
+nuestras funciones podrán llamar librerías desde las _Layers_ que agreguemos.
 
-To create a layer for a library:
-1. Go to [PyPI](https://pypi.org/) and download the _manylinux_ wheel file of
-   the library version required by your function (make sure it is compatible
-   with the runtime and processor architecture of your Lambda function);
-3. Unpack the library from your terminal using `% wheel unpack 
+Para crear una capa:
+1. Ve a [PyPI](https://pypi.org/) y descarga el archivo _wheel_ para _manylinux_
+   de la biblioteca que requieras (asegúrate que sea compatible con el _runtime_
+   y la arquitectura que elegiste al crear tu función);
+2. Desempaca la biblioteca desde tu terminal usando `% wheel unpack 
    <your-library.whl>`;
-4. Change the name of the folder that was unpacked to _python_;
-5. Zip the _python_ folder;
-6. Sign in to AWS, select your region and go to _AWS Lambda_ > _Layers_ >
+3. Cambia el nombre del folder que se desempacó a _python_;
+4. Comprime el folder _python_;
+5. Entra a AWS, seleciona tu región y ve a _AWS Lambda_ > _Layers_ >
    _Create a Layer_;
-7. Name your layer and upload the `python.zip` file; and
-8. Click on _Create_.
+6. Dale un nombre a tu capa y sube el archivo `python.zip` file; y
+7. Haz clic en _Create_.
 
-For example, to create a numpy 1.24.1 layer for Python 3.9 and a 64-bit
-processor, we must: 
-1. Download the numpy 1.24.1 [wheel file](
-numpy-1.24.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl) for
-Python 3.9 and 64-bit processors;
-2. Unpack the wheel file using `wheel unpack numpy-1.24.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl`;
-3. This will create a folder called _numpy-1.24.1_;
-4. Rename this folder to _python_;
-5. Zip the _python_ folder;
-6. Login to AWS and go to _AWS Lambda_ > _Layers_ > _Create a Layer_;
-7. Name it whatever you want and upload the `python.zip` file; and
-8. Click on _Create_.
+Como ejemplo, crearemos una capa de numpy 1.24.1 para Python 3.9 y procesadores
+de 64 bits.
+1. Descarga el [archivo wheel](
+   numpy-1.24.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+   ) de numpy 1.24.1 para Python 3.9 y procesadores de 64 bits;
+2. Desempaca el archivo con `wheel unpack numpy-1.24.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl`;
+3. Esto creará un folder llamado _numpy-1.24.1_, el cual debes renombrar a
+   _python_;
+4. Comprime el folder _python_;
+5. Accede a AWS y ve a _AWS Lambda_ > _Layers_ > _Create a Layer_;
+6. Nombra tu capa y sube el archivo `python.zip`; y
+7. Haz clic en _Create_.
 
-You must do this for all the libraries your function requires. Alternatively,
-repeat this process only for the libraries that do not fit within the size
-limit (though I recommend doing it for every library so that you can
-individually add them to other Lambda functions in the future!).
+Debes repetir este proceso para todas las bibliotecas requeridas por tu función.
+Como alternativa, puedes hacer este proceso solamente para las librerías que no
+caben en tu paquete de despliegue. Sin embargo, recomiendo hacer esto
+individualmente para cada biblioteca individuales, ya que de esta forma podrás
+cargarlas por separado en funciones Lambda que crees en el futuro.
 
-Now that we have created the necessary Lambda layers, all we need in our
-deployment package are the following files:
-1. The function (`lambda_function.py`); and
-2. The serialized model (`clf.sav`).
+Una vez que hayas creado las capas necesarias, puedes proceder a empaquetar los
+siguientes archivos:
+1. La función (`lambda_function.py`); y
+2. El modelo serializado (`clf.sav`).
 
-So compress these two files. In this example, we will compress them into a file
-called `deployment-package.zip`.
+Para lograrlo, comprime ambos archivos en `deployment-package.zip`.
 ```bash
-cd code/lambda-function/ # Change directory
-zip -r deployment-package.zip . # Compress everything in current directory
+cd code/lambda-function/ # Cambia el directorio
+zip -r deployment-package.zip . # Comprime todo lo que esté dentro
 ```
 
-Now that our deployment package is ready, we are finally ready to create a
-Lambda function.
+### 3. Crear la función
+El siguiente paso consiste en crear la función. Ve a la consola, selecciona la
+misma región en donde creaste tus capas y busca _Lambda_. Luego:
 
-### 3. Creating a Lambda Function
-We will go to our AWS Management Console and search for _Lambda_. Make sure to
-select the same region as where you stored your Lambda Layers! Now:
-
-1. Go to _Functions_ > _Create function_ > _Author from scratch_;
-2. Configure your function as follows:
-   1. Name your function;
-   2. Use a Python 3.9 runtime;
-   3. select x86_64 as your architecture;
-   4. leave _Permissions_ untouched;
-   5. Click on _Advanced Settings_ > _Enable Function URL_ > _Auth type = NONE_.
-3. Click on _Create function_.
+1. Ve a _Functions_ > _Create function_ > _Author from scratch_;
+2. Configura tu función de la siguiente manera:
+   1. Nombra tu función;
+   2. Selecciona un runtime de Python 3.9;
+   3. Usa una arquitectura de x86_64;
+   4. No le hagas cambios a la sección _Permissions_;
+   5. Haz clic en
+_Advanced Settings_ > _Enable Function URL_ > _Auth type = NONE_; y finalmente
+3. Da clic en _Create function_.
 
 ![Lambda function configuration](
     https://drive.google.com/uc?export=view&id=1Bu271Wt5XNdu8Fl8rrUc6PtazUgZZckb
 )
 
-We just created a Lambda function with an open URL endpoint. Doing this will
-automatically enable an HTTP endpoint to our function that anyone can connect
-to! All they need in order to invoke the function is its URL. Your function
-should look as follows:
+Estos pasos crearán una función con un extremo abierto. De esta forma,
+cualquier persona o aplicación podrá conectarse a nuestra función usando la URL
+que generamos al habilitar la opción _Enable Function URL_. En este momento tu
+función se debe de ver así:
 ![Lambda function URL](
     https://drive.google.com/uc?export=view&id=15CnA27KccCbC8HW5vluM5rYi_OCljXp4
 )
 
-In our example, the deployment package we just uploaded is missing scikit-learn
-and all of its dependencies (because they are too large). To add them, scroll
-all the way down and:
-1. Click on _Add a layer_;
-2. Click on _Custom layers_;
-3. Select your joblib layer;
-4. Select a version (there should only be one); and
-5. Repeat for threadpoolctl, numpy, scipy and scikit-learn.
+Recuerda que aún falta incluir scikit-learn y todas sus dependencias en nuestro
+paquete de despliegue. Para agregar estas bibliotecas a la función, baja hasta
+el final de la página y:
+1. Haz clic en _Add a layer_ > _Custom layers_;
+2. Selecciona la capa que quieras agregar (joblib, por ejemplo);
+3. Selecciona la versión (solamente debería de haber una); y
+4. Repite el proceso para las demás bibliotecas (threadpoolctl, numpy, scipy y
+   scikit-learn).
 
-After doing this, your layers should look like this:
+Tu función debería verse así:
 
 ![Layers added to function](
     https://drive.google.com/uc?export=view&id=1Gioj4T6puagOmGl-SkE9LDRGIrdJELnH
 )
 
-## Posting requests to a Lambda function
-Let's recap what we have done. We trained a model, exported it, wrote a
-function that expects a request and passes it to the model to return a
-prediction. We zipped the model and function into a deployment package and we
-uploaded it to a Lambda function that has a Lambda URL endpoint as well as all
-the Lambda Layers needed to load the model.
+## Conéctate a tu función
+Recapitulemos lo que hemos hecho. Primero entrenamos y exportamos un modelo de
+inteligencia artificial, luego escribimos un archivo de Python que define una
+función que recibe un evento y lo mete al modelo para generar una predicción.
+Después comprimimos el modelo y la función para crear un paquete de despliegue,
+el cual subimos a una Lambda y le agregamos las bibliotecas requeridas para
+cargar el modelo usando _Layers_.
 
-Namely, the Lambda URL that we enabled when creating the function is an HTTP
-endpoint. We (or any application) can invoke the function by making calls to
-this URL. In our business case, we want to allow the doctors to send information
-to the model and have it respond with a prediction.
+Al crear la función habilitamos un extremo HTTP. Nosotros (o cualquier
+aplicación) puede invocar la función enviando solicitudes a este URL. En nuestro
+caso de negocio, queremos permitir que los doctores envíen información al
+extremo para que el modelo les reponda con una predicción.
 
-The doctors will do this by sending a POST request to the function's endpoint.
-The doctor's request must contain the features expected by the model in the
-request's `body`.
-
-Imagine a doctor has the following scan:
+Puntualmente, los doctores enviarán una solicitud POST al extremo de la función.
+El evento debe contener todos los atributos requeridos por el modelo en el
+cuerpo (`body`) de la solicitud. Como ejemplo, imagina que la prueba de un
+paciente resulta en los siguientes valores.
 
 | feature             | value   |
 |---------------------|---------|
@@ -287,33 +283,33 @@ Imagine a doctor has the following scan:
 | Worst area          | 1886.0  |
 | Mean concave points | 0.01    |
 
-We will go over two examples to see how they could pass this information to the
-model and receive a prediction.
+Veremos dos formas en las que un doctor podría enviar esta información al modelo
+para generar una predicción.
 
-### Example 1. Invoke the function with cURL
-The doctor can send this request to the model using a terminal:
+### Ejemplo 1 - Invoca la función con cURL
+El doctor puede enviar la carga desde su terminal de la siguiente manera:
 ```bash
 % curl -X POST \
       '{your-URL-here}' \
       -H 'Content-Type: application/json' \
       -d '{"meanConcavePoints": 0.07951, "worstRadius": 24.86, "worstTexture": 26.58, "worstArea": 1866.0, "worstConcavePoints": 0.01}'
 ```
-Which responds with:
+Lo que responde con:
 ```
 {"reason":"OK","prediction":1,"status":"200"}
 ```
-This means that the observation we just sent to the model is not believed to be
-malignant.
+Esto resultado significa que el modelo detectó señales de cáncer en la prueba
+del paciente.
 
-### Example 2. Invoke the function with Python
+### Ejemplo 2 - Invoca la función desde Python
 ```python
-# Import requests library
+# Importa una biblioteca para hacer solicitudes a extremos
 import requests
 
-# Declare your function's url
+# Declara la URL de la función
 url = "<your-function's-URL-here>"
 
-# Declare observation
+# Declara la observación
 observation = {
     'meanConcavePoints': 0.07951,
     'worstRadius': 24.86,
@@ -322,16 +318,16 @@ observation = {
     'worstConcavePoints': 0.01,
 }
 
-# Post request
+# Envía la solicitud
 req = requests.post(
     url=url,
     json=observation,
 )
 
-# Print response
+# Imprime la respuesta
 print(req.json())
 ```
-Which returns:
+El resultado se ve igual que mediante cURL.
 ```python
 {'reason': 'OK', 'prediction': 1, 'status': '200'}
 ```
