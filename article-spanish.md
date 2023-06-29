@@ -332,29 +332,29 @@ El resultado se ve igual que mediante cURL.
 {'reason': 'OK', 'prediction': 1, 'status': '200'}
 ```
 
-### Example 3. Try sending a bad request
-Just to be safe, let's see how our function handles bad requests. We will send
-a request with only one feature.
+### Ejemplo 3 - Mandar una solicitud mala
+Por cautela, veamos qué hace nuestra función para manejar errores. Para
+probabrlo, enviaremos una observación con solamente un atributo.
 ```bash
 % curl -X POST \
       '{your-URL-here}' \
       -H 'Content-Type: application/json' \
       -d '{"meanConcavePoints": 0.07951}'
 ```
-Which responds with:
+Lo cual responde con:
 ```
 {"reason":"'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints","prediction":"","status":"400"}
 ```
 
-## Conclusion
-We have built a fully serverless prediction service using AWS Lambda, so
-congratulations to you! In following this article, you have learned how to
-create a deployment package, add external libraries as Layers, enable an HTTP
-endpoint, and trigger your function from anywhere in the world.
+## Conclusión
+¡Felicidades! Hemos construido un servicio predictivo completamente _serverless_
+usando AWS Lambda. Al seguir este artículo, has aprendido a crear un paquete de
+despliegue, agregar bibliotecas externas en forma de capas, habilitar un extremo
+HTTP y a activar tu función desde cualquier parte del mundo.
 
-Why is this useful? Remember that no matter how long we spend cross-validating
-our performance metrics, the models we build are only useful insofar as other
-users or applications can interact with them. In this sense, learning how to
-productionize models with AWS Lambda is an invaluable skill that will reduce
-your time-to-value by allowing you to productionize your code from the comfort
-of your console.
+¿Esto es útil? Recuerda que no importa cuánto tiempo pasemos haciendo
+validación cruzada sobre nuestras métricas de desempeño, los modelos que
+construyamos solo son útiles si otros usuarios o aplcaciones pueden interactuar
+con ellos. En este sentido, aprender a produccionalizar tus modelos con AWS
+Lambda es una habilidad invaluable que te ayudará a reducir tu _time-to-value_
+al permitirte desplegar tus modelos desde la comodidad de tu consola.
