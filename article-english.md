@@ -100,19 +100,19 @@ For example, if the clinic sends the following information in the `body` of
 their request:
 ```
 {
-	"meanConcavePoints": 0.03821,
-	"worstRadius": 14.97,
-	"worstTexture": 24.64,
-	"worstArea": 677.9,
-	"worstConcavePoints": 0.1015
+    "meanConcavePoints": 0.03821,
+    "worstRadius": 14.97,
+    "worstTexture": 24.64,
+    "worstArea": 677.9,
+    "worstConcavePoints": 0.1015
 }
 ```
-our function will respond with:
+Our function will respond with:
 ```
 {
-	"reason": "OK",
-	"prediction": 0,
-	"status": "200"
+    "reason": "OK",
+    "prediction": 0,
+    "status": "200"
 }
 ```
 
@@ -120,18 +120,18 @@ Our function can also handle errors. For example, if the clinic sends a request
 that is missing a feature:
 ```
 {
-	"meanConcavePoints": 0.03821,
-	"worstRadius": 14.97,
-	"worstTexture": 24.64,
-	"worstArea": 677.9
+    "meanConcavePoints": 0.03821,
+    "worstRadius": 14.97,
+    "worstTexture": 24.64,
+    "worstArea": 677.9
 }
 ```
-our function will respond with:
+Our function will respond with:
 ```
 {
-	"reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
-	"prediction": "",
-	"status": "400"
+    "reason": "'body' must contain values for: meanConcavePoints, worstRadius, worstTexture, worstArea, worstConcavePoints",
+    "prediction": "",
+    "status": "400"
 }
 ```
 
@@ -228,8 +228,8 @@ select the same region as where you stored your Lambda Layers! Now:
 2. Configure your function as follows:
    1. Name your function;
    2. Use a Python 3.9 runtime;
-   3. select x86_64 as your architecture;
-   4. leave _Permissions_ untouched;
+   3. Select x86_64 as your architecture;
+   4. Leave _Permissions_ untouched;
    5. Click on _Advanced Settings_ > _Enable Function URL_ > _Auth type = NONE_.
 3. Click on _Create function_.
 
@@ -289,7 +289,7 @@ Imagine a doctor has the following scan:
 We will go over two examples to see how they could pass this information to the
 model and receive a prediction.
 
-### Example 1. Invoke the function with cURL
+### Example 1 - Invoke the function with cURL
 The doctor can send this request to the model using a terminal:
 ```bash
 % curl -X POST \
@@ -304,7 +304,7 @@ Which responds with:
 This means that the observation we just sent to the model is not believed to be
 malignant.
 
-### Example 2. Invoke the function with Python
+### Example 2 - Invoke the function with Python
 ```python
 # Import requests library
 import requests
@@ -335,7 +335,7 @@ Which returns:
 {'reason': 'OK', 'prediction': 1, 'status': '200'}
 ```
 
-### Example 3. Try sending a bad request
+### Example 3 - Try sending a bad request
 Just to be safe, let's see how our function handles bad requests. We will send
 a request with only one feature.
 ```bash
