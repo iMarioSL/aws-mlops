@@ -301,7 +301,7 @@ Which responds with:
 ```
 {"reason":"OK","prediction":1,"status":"200"}
 ```
-This means that the observation we just sent to the model is not believed to be
+This means that the observation we just sent to the model is believed to be
 malignant.
 
 ### Example 2 - Invoke the function with Python
