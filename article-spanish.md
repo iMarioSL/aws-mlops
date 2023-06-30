@@ -1,13 +1,13 @@
 # Poner un modelo en producción con AWS Lambda
 Como científicos de datos somos capaces de aplicar complejos algoritmos de
-Inteligencia Artificial para captar patrones de los datos y predecir el futuro.
+Inteligencia Artificial para captar patrones y predecir el futuro.
 Desafortunadamente, nuestros modelos solamente son _útiles_ si otras personas o
 aplicaciones pueden _usarlos_ para realizar predicciones.
 
 Poner un modelo en producción se refiere al proceso de disponibilizarlo a
-usuarios alrededor del mundo. En este artículo construiremos un servicio de
-predicción _serverless_ con el cual los usuarios podrán interactuar para
-determinar si imágenes digitalizadas son cancerígenas o no.
+usuarios alrededor del mundo. En este artículo usaremos AWS Lambda para
+produccionalizar un modelo capaz de detectar enfermedades en pruebas de
+pacientes.
 
 > Puedes encontrar todos los recursos necesarios para replicar este proyecto [en
 este repositorio](https://github.com/ArturoSbr/aws-mlops).
