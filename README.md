@@ -4,7 +4,6 @@ is a fully serverless prediction service that users or applications can connect
 to.
 
 ## Structure of this repo
-The repo is structured as follows:
 ```
 .
 ├── code
@@ -17,7 +16,6 @@ The repo is structured as follows:
 ````
 
 ## Running this repo
-In order to run it:
 1. Create a virtual environment using `venv` and activate it.
 2. Install dependencies (`$ pip install -r requirements.txt`).
 3. Run either one of the `fit-model` files. This will export the model in
