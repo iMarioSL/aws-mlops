@@ -16,22 +16,22 @@ to.
 ````
 
 ## Running this repo
-1. Create a virtual environment using `venv` and activate it.
-2. Install dependencies (`$ pip install -r requirements.txt`).
+1. Create a virtual environment using `venv` and activate it;
+2. Install dependencies (`$ pip install -r requirements.txt`);
 3. Run either one of the `fit-model` files. This will export the model in
-`./code/lambda-function/`.
-    - `fit-model.py` is a simple Python script.
-    - `fit-model.ipynb` is a notebook and has more context (but requires
-    ipykernel).
-4. Compress the `lambda-function/` directory (.zip).
-5. Create an AWS Lambda function.
-6. Create [Lambda
-Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html)
+`./code/lambda-function/`;
+    - `fit-model.py`
+    - `fit-model.ipynb` (has more context but requires ipykernel)
+4. Compress the `lambda-function/` directory;
+5. Create an AWS Lambda function;
+6. Create [Lambda Layers](
+   https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
+)
 for `joblib`, `numpy`, `scipy` and `threadpoolctl` (read article for more info
-details on how to do this!) and add them to your function.
-7. Create a public [Lambda Function
-ULR](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
-8. Start posting requests!
+details on how to do this) and add them to your function;
+8. Create a public [Lambda Function
+URL](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html); and
+9. Start posting requests!
 
 ## Examples
 Example with `curl`:
