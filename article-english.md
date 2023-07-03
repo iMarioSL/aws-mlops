@@ -78,11 +78,11 @@ The fitted model is stored in this file, and we can load it directly
 in other scripts without having to repeat the training process all over again.
 
 ## Creating a Lambda Function
-AWS Lambda allows us to host our own code on machines owned and maintained
+AWS Lambda allows us to host our code on machines owned and maintained
 by Amazon. From a developer's perspective, all we need to do is:
-1. Writing a function in our preferred programming language;
-2. Packing our dependencies into a deployment package; and
-3. Deploying our Lambda function.
+1. Write a function in our preferred programming language;
+2. Pack our dependencies in a deployment package; and
+3. Deploy our Lambda function.
 
 ### 1. Writing the Lambda Function
 If you take a look into the `code/lambda-function/` directory, you will see the
@@ -139,8 +139,8 @@ Our function will respond with:
 To deploy our code as a Lambda function, we must pack our scripts and
 dependencies into a _deployment package_. The idea is to pack all the resources
 needed to run the function we wrote so that the machine that ultimately executes
-our code has access to all the things it needs to run it as we would on our
-local machines.
+it has access to an environment that is identical to the one in our
+local machine.
 
 As you can see, `lambda_function.py` loads the file `clf.sav`, which is a
 _pickled_ scikit-learn object. This means that our function requires
@@ -201,14 +201,17 @@ Python 3.9 and 64-bit processors;
 8. Click on _Create_.
 
 You must do this for all the libraries your function requires. Alternatively,
-repeat this process only for the libraries that do not fit within the size
-limit (though I recommend doing it for every library so that you can
-individually add them to other Lambda functions in the future!).
+you can repeat this process only for the libraries that do not fit within the
+size limit (though I recommend doing it separately for every library so that you
+can individually add them to other Lambda functions in the future!).
 
 Now that we have created the necessary Lambda layers, all we need in our
 deployment package are the following files:
 1. The function (`lambda_function.py`); and
 2. The serialized model (`clf.sav`).
+
+> NOTE: Thanks to the Layers we created, there is no need to add any libraries
+> to our deployment package. We will make use of them in the next section.
 
 So compress these two files. In this example, we will compress them into a file
 called `deployment-package.zip`.
@@ -217,7 +220,7 @@ cd code/lambda-function/ # Change directory
 zip -r deployment-package.zip . # Compress everything in current directory
 ```
 
-Now that our deployment package is ready, we are finally ready to create a
+Now that our deployment package is ready, we can finally move on to creating a
 Lambda function.
 
 ### 3. Creating a Lambda Function
@@ -245,9 +248,9 @@ should look as follows:
     https://drive.google.com/uc?export=view&id=15CnA27KccCbC8HW5vluM5rYi_OCljXp4
 )
 
-In our example, the deployment package we just uploaded is missing scikit-learn
-and all of its dependencies (because they are too large). To add them, scroll
-all the way down and:
+Remember how the deployment package we uploaded did not have any libraries in
+it? Well, it is time to add them via Layers. The following process shows how to
+add joblib to our function (the process is identical for any library):
 1. Click on _Add a layer_;
 2. Click on _Custom layers_;
 3. Select your joblib layer;
@@ -265,7 +268,7 @@ Let's recap what we have done. We trained a model, exported it, wrote a
 function that expects a request and passes it to the model to return a
 prediction. We zipped the model and function into a deployment package and we
 uploaded it to a Lambda function that has a Lambda URL endpoint as well as all
-the Lambda Layers needed to load the model.
+the Lambda Layers needed to run the code.
 
 Namely, the Lambda URL that we enabled when creating the function is an HTTP
 endpoint. We (or any application) can invoke the function by making calls to
@@ -301,7 +304,7 @@ Which responds with:
 ```
 {"reason":"OK","prediction":1,"status":"200"}
 ```
-This means that the observation we just sent to the model is believed to be
+This means that the observation we just sent to the model **is** believed to be
 malignant.
 
 ### Example 2 - Invoke the function with Python
@@ -360,4 +363,4 @@ our performance metrics, the models we build are only useful insofar as other
 users or applications can interact with them. In this sense, learning how to
 productionize models with AWS Lambda is an invaluable skill that will reduce
 your time-to-value by allowing you to productionize your code from the comfort
-of your console.
+of your ~~home~~ console.
