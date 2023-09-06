@@ -93,9 +93,9 @@ la función que queremos desplegar en AWS Lambda.
 En el contexto del caso de negocio, nuestro objetivo es habilitar un extremo
 HTTP (HTTP endpoint) para que la clínica pueda invocar al modelo remotamente.
 Queremos que los doctores puedan enviar un archivo JSON a este extremo para
-activar el archivo `lambda_function.py`, el cual cargará el modelo (en un objeto
+activar el código `lambda_function.py`, el cual cargará el modelo (en un objeto
 llamado `clf`), recibirá el evento enviado por la clínica, extraerá el cuerpo
-(`body`) del mensaje, le pasará los atributos al objeto `clf` y regresará una
+(`body`) del mensaje, le pasará los atributos al modelo y regresará una
 predicción.
 
 Por ejemplo, si la cínica manda la siguiente información en el cuerpo del
