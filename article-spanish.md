@@ -40,9 +40,9 @@ aplicación y los consumidores pueden usarlo cuando ellos quieran. Gracias a est
 tipo de soluciones, ahora podemos rentar el hardware de AWS y solamente nos
 preocupamos por escribir código.
 
-En este sentido, AWS Lambda es el servicio líder del reino _serverless_, pues es
-un servicio que nos permite escribir funciones en nuestro lenguaje de
-programación preferido y desplegarlo en hardware de AWS. Esto significa que no
+En este sentido, AWS Lambda es el servicio líder del reino _serverless_, pues
+nos permite escribir funciones en nuestro lenguaje de
+programación preferido y desplegarlo en AWS. Esto significa que no
 tenemos que preocuparnos por provisionar o darle mantenimiento a la instancia
 en donde nuestra función está hospedada. Lo único que tenemos que hacer es
 escribir la función en sí.
@@ -53,7 +53,7 @@ entrenamiento del mismo. Dado que el propósito de este artículo es aprender a
 produccionalizar un modelo, vamos a pasar rápidamente por el proceso de
 entrenamiento. Para esto, descarga [el repositorio](
 	https://github.com/ArturoSbr/aws-mlops
-), replica el ambiente de Python y ejecuta el script.
+), replica el ambiente de Python y ejecuta el script de entrenamiento.
 
 ```bash
 % cd <path where you downloaded the repo>/aws-mlops # Cambia de directorio
