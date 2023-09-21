@@ -98,7 +98,7 @@ llamado `clf`), recibirá el evento enviado por la clínica, extraerá el cuerpo
 (`body`) del mensaje, le pasará los atributos al modelo y regresará una
 predicción.
 
-Por ejemplo, si la cínica manda la siguiente información en el cuerpo del
+Por ejemplo, si la clínica manda la siguiente información en el cuerpo del
 evento:
 ```
 {
